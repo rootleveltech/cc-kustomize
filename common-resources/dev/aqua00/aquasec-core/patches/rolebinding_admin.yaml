@@ -1,0 +1,12 @@
+---
+kind: RoleBinding
+metadata:
+  name: handled-by-target-keyword-in-kustomization-yaml
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: Group
+  name: aqua00-core-proj-admin-grp

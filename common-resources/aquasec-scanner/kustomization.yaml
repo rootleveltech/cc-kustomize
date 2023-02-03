@@ -1,0 +1,86 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+helmCharts:
+- name: scanner
+  includeCRDs: true
+  version: "2022.4"
+  repo: https://helm.aquasec.com
+  releaseName: scanner
+  valuesInline:
+    imageCredentials:
+      create: false
+      name: aqua-registry-secret
+      repositoryUriPrefix: "registry.aquasec.com"
+      registry: "registry.aquasec.com"
+      username: ""
+      password: ""
+    platform: "gke"
+    directCC:
+      enabled: true
+    serviceAccount:
+      create: true
+      name: "aqua-scanner-sa"
+    server:
+      scheme: "http"
+      serviceName: "server-console-svc"
+      port: 8080
+    additionalCerts: []
+    serverSSL:
+      enable: false
+      createSecret: true
+      secretName: "aqua-web-certs"
+      certFile:
+    cyberCenter:
+      mtls:
+        enabled: false
+        secretName: "aqua-cc-certs"
+        publicKey_fileName: "tls.crt"
+        privateKey_fileName: "tls.key"
+        rootCA_fileName: "rootCA.crt"
+    image:
+      repository: scanner
+      tag: "2022.4.81"
+      pullPolicy: IfNotPresent
+    logLevel:
+    nameOverride: null
+    fullnameOverride: null
+    user: null
+    password: null
+    scannerUserSecret:
+      enable: true
+      secretName: "scanner-credentials"
+      userKey: "user"
+      passwordKey: "password"
+    replicaCount: 1
+    livenessProbe: {}
+    readinessProbe: {}
+    resources:
+      requests:
+        cpu: 1000m
+        memory: 0.5Gi
+      limits:
+        cpu: 2000m
+        memory: 1Gi
+    nodeSelector: {}
+    tolerations:
+    - key: "node.kubernetes.io/unreachable"
+      operator: "Exists"
+      effect: "NoExecute"
+      tolerationSeconds: 6000
+    - key: "node.kubernetes.io/not-ready"
+      operator: "Exists"
+      effect: "NoExecute"
+      tolerationSeconds: 6000
+    affinity: {}
+    podAnnotations: {}
+    podLabels: {}
+    securityContext:
+      runAsUser: 11431
+      runAsGroup: 11433
+      fsGroup: 11433
+    container_securityContext: {}
+    extraEnvironmentVars: {}
+    extraSecretEnvironmentVars: []
+    registries: []

@@ -1,0 +1,9 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: handled-by-target-keyword-in-kustomization-yaml
+spec:
+  template:
+    spec:
+      serviceAccount: aqua-sa

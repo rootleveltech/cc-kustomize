@@ -1,0 +1,253 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+helmCharts:
+- name: cyber-center
+  includeCRDs: true
+  version: "2022.4"
+  repo: https://helm.aquasec.com
+  releaseName: cyber-center
+  valuesInline:
+    imageCredentials:
+      create: false
+      name: aqua-registry-secret
+      repositoryUriPrefix: "registry.aquasec.com"
+      registry: "registry.aquasec.com"
+      username: ""
+      password: ""
+    serviceaccount:
+      create: true
+      name: aqua-sa
+    replicaCount: 1
+    image:
+      repository: "cc-premium"
+      tag: "20230130"
+      pullPolicy: IfNotPresent
+    service:
+      type: ClusterIP
+      annotations: {}
+      ports:
+      - name: https
+        port: 443
+        targetPort: 5000
+        nodePort:
+        protocol: TCP
+    tolerations:
+    - key: "node.kubernetes.io/unreachable"
+      operator: "Exists"
+      effect: "NoExecute"
+      tolerationSeconds: 6000
+    - key: "node.kubernetes.io/not-ready"
+      operator: "Exists"
+      effect: "NoExecute"
+      tolerationSeconds: 6000
+    securityContext: {}
+    container_securityContext: {}
+    podAnnotations: {}
+    nodeSelector: {}
+    affinity: {}
+    TLS:
+      enabled: false
+      secretName: "aqua-cc-certs"
+      publicKey_fileName: "tls.crt"
+      privateKey_fileName: "tls.key"
+      rootCA_fileName: "rootCA.crt"
+- name: server
+  includeCRDs: true
+  version: "2022.4"
+  repo: https://helm.aquasec.com
+  releaseName: server
+  valuesInline:
+    imageCredentials:
+      create: false
+      name: aqua-registry-secret
+      repositoryUriPrefix: "registry.aquasec.com"
+      registry: "registry.aquasec.com"
+      username: ""
+      password: ""
+    clusterRole:
+      roleRef: ""
+    openshift_route:
+      create: false
+    serviceAccount:
+      annotations: {}
+      create: false
+      name: "aqua-sa"
+    admin:
+      token: ""
+      password: "ChangeMe!1"
+    podSecurityPolicy:
+      create: true
+      privileged: true
+    global:
+      platform: "gke"
+      db:
+        external:
+          enabled: false
+        passwordFromSecret:
+          enabled: true
+          global:
+            dbPasswordName: aqua-db
+            dbPasswordKey: password
+            dbAuditPasswordName: aqua-audit-db
+            dbAuditPasswordKey: password
+          dbPasswordName: aqua-db
+          dbPasswordKey: password
+          dbAuditPasswordName: aqua-audit-db
+          dbAuditPasswordKey: password
+        ssl: true
+        sslmode: require
+        auditssl: true
+        auditsslmode: require
+        securityContext:
+          runAsUser: 70
+          runAsGroup: 70
+          fsGroup: 11433
+        container_securityContext:
+          privileged: false
+        env_size: "L"
+        image:
+          repository: database
+          tag: "2022.4.81"
+          pullPolicy: IfNotPresent
+        persistence:
+          database:
+            enabled: true
+            storageClass:
+            size: 30Gi
+            accessMode: ReadWriteOnce
+          audit_database:
+            enabled: true
+            storageClass:
+            size: 30Gi
+            accessMode: ReadWriteOnce
+        resources:
+          requests:
+            cpu: 3000m
+            memory: 6Gi
+          limits:
+            cpu: 12000m
+            memory: 20Gi
+        nodeSelector: {}
+        tolerations:
+        - key: "node.kubernetes.io/unreachable"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: 6000
+        - key: "node.kubernetes.io/not-ready"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: 6000
+        affinity: {}
+        podAnnotations: {}
+        podLabels: {}
+        extraEnvironmentVars: {}
+        extraSecretEnvironmentVars: []
+    gateway:
+      enabled: true
+      imageCredentials:
+        create: false
+        name: aqua-registry-secret
+        repositoryUriPrefix: "registry.aquasec.com"
+        registry: "registry.aquasec.com"
+        username: ""
+        password: ""
+      rbac:
+        enabled: false
+        privileged: true
+        roleRef:
+      platform: "gke"
+      serviceAccount:
+        create: false
+        name: "aqua-sa"
+      replicaCount: 1
+      headlessService: false
+      image:
+        repository: gateway
+        tag: "2022.4.81"
+        pullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: 1000m
+          memory: 2Gi
+        limits:
+          cpu: 2000m
+          memory: 4Gi
+      nodeSelector: {}
+      tolerations:
+      - key: "node.kubernetes.io/unreachable"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 6000
+      - key: "node.kubernetes.io/not-ready"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 6000
+      affinity: {}
+      podAnnotations: {}
+      podLabels: {}
+      securityContext:
+        runAsUser: 11431
+        runAsGroup: 11433
+        fsGroup: 11433
+      container_securityContext: {}
+      pdb:
+        minAvailable: "1"
+      TLS:
+        enabled: false
+        secretName: "aqua-gateway-certs"
+        publicKey_fileName: "tls.crt"
+        privateKey_fileName: "tls.key"
+        rootCA_fileName: "rootCA.crt"
+        aqua_verify_enforcer: "1"
+      extraEnvironmentVars: {}
+      extraSecretEnvironmentVars: []
+    web:
+      replicaCount: 1
+      logLevel:
+      image:
+        repository: console
+        tag: "2022.4.81"
+        pullPolicy: IfNotPresent
+      additionalCerts: []
+      resources:
+        requests:
+          cpu: 2000m
+          memory: 1Gi
+        limits:
+          cpu: 3000m
+          memory: 2Gi
+      nodeSelector: {}
+      tolerations:
+      - key: "node.kubernetes.io/unreachable"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 6000
+      - key: "node.kubernetes.io/not-ready"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 6000
+      affinity: {}
+      podAnnotations: {}
+      podLabels: {}
+      securityContext:
+        runAsUser: 11431
+        runAsGroup: 11433
+        fsGroup: 11433
+      container_securityContext: {}
+      pdb:
+        minAvailable: "1"
+      TLS:
+        enabled: false
+        secretName: "aqua-web-certs"
+        publicKey_fileName: "tls.crt"
+        privateKey_fileName: "tls.key"
+        rootCA_fileName: "rootCA.crt"
+      extraEnvironmentVars:
+        OFFLINE_CC_MTLS_ENABLE: "1"
+        CYBERCENTER_ADDR: "https://default-cc"
+      extraSecretEnvironmentVars: []
+    envoy:
+      enabled: false
+

@@ -1,0 +1,883 @@
+# This is an auto-generated file. DO NOT EDIT
+---
+apiVersion: v1
+imagePullSecrets:
+- name: aqua-registry-secret
+kind: ServiceAccount
+metadata:
+  labels:
+    app: cyber-center
+    app.kubernetes.io/instance: cyber-center
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: cyber-center
+    app.kubernetes.io/version: "2022.4"
+    helm.sh/chart: cyber-center-2022.4.1
+  name: aqua-sa
+  namespace: aqua00-core
+---
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  labels:
+    app: server
+    aqua.component: server
+  name: server-psp
+spec:
+  allowedCapabilities:
+  - '*'
+  fsGroup:
+    rule: RunAsAny
+  privileged: true
+  runAsUser:
+    rule: RunAsAny
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  volumes:
+  - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app: server
+    app.kubernetes.io/instance: server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: server-server
+    app.kubernetes.io/version: "2022.4"
+    aqua.component: server
+    helm.sh/chart: server-2022.4.11
+    rbac.example.com/aggregate-to-monitoring: "true"
+  name: aqua00-core-server-cluster-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  - services
+  - endpoints
+  - pods
+  - deployments
+  - namespaces
+  - componentstatuses
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - '*'
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - policies
+  resourceNames:
+  - server-psp
+  resources:
+  - podsecuritypolicies
+  verbs:
+  - use
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app: server
+    app.kubernetes.io/instance: server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: server-server
+    app.kubernetes.io/version: "2022.4"
+    aqua.component: server
+    helm.sh/chart: server-2022.4.11
+  name: aqua00-core-server-role-binding
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: aqua00-core-server-cluster-role
+subjects:
+- kind: ServiceAccount
+  name: aqua-sa
+  namespace: aqua00-core
+---
+apiVersion: v1
+data:
+  AQUA_ENV_SIZE: L
+  PGDATA: /var/lib/postgresql/data/db-files
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: server-server
+    app.kubernetes.io/version: "2022.4"
+    aqua.component: database
+    helm.sh/chart: server-2022.4.11
+  name: server-db-config
+  namespace: aqua00-core
+---
+apiVersion: v1
+data:
+  AQUA_CONSOLE_SECURE_ADDRESS: server-console-svc:443
+  HEALTH_MONITOR: 0.0.0.0:8082
+  SCALOCK_AUDIT_DBHOST: server-audit-database-svc
+  SCALOCK_AUDIT_DBNAME: slk_audit
+  SCALOCK_AUDIT_DBPORT: "5432"
+  SCALOCK_AUDIT_DBSSL: require
+  SCALOCK_AUDIT_DBUSER: postgres
+  SCALOCK_DBHOST: server-database-svc
+  SCALOCK_DBNAME: scalock
+  SCALOCK_DBPORT: "5432"
+  SCALOCK_DBSSL: require
+  SCALOCK_DBUSER: postgres
+  SCALOCK_GATEWAY_PUBLIC_IP: server-gateway-svc
+  SCALOCK_LOG_LEVEL: INFO
+kind: ConfigMap
+metadata:
+  labels:
+    app: server-gateway
+    app.kubernetes.io/instance: server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: server-gateway
+    app.kubernetes.io/version: "2022.4"
+    aqua.component: gateway
+    helm.sh/chart: gateway-2022.4.8
+  name: server-gateway-config
+  namespace: aqua00-core
+---
+apiVersion: v1
+data:
+  PGDATA: /var/lib/postgresql/data/db-files
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: server-server
+    app.kubernetes.io/version: "2022.4"
+    aqua.component: database
+    helm.sh/chart: server-2022.4.11
+  name: server-initdb-config
+  namespace: aqua00-core
+---
+apiVersion: v1
+data:
+  AQUA_KE_GROUP_NAME: helm-default-ke-group
+  AQUA_KE_GROUP_TOKEN: ke-token
+  BATCH_INSTALL_GATEWAY: aqua-gateway
+  BATCH_INSTALL_NAME: helm-default-enforcer-group
+  BATCH_INSTALL_ORCHESTRATOR: Kubernetes
+  BATCH_INSTALL_TOKEN: enforcer-token
+  SCALOCK_AUDIT_DBHOST: server-audit-database-svc
+  SCALOCK_AUDIT_DBNAME: slk_audit
+  SCALOCK_AUDIT_DBPORT: "5432"
+  SCALOCK_AUDIT_DBSSL: require
+  SCALOCK_AUDIT_DBUSER: postgres
+  SCALOCK_DBHOST: server-database-svc
+  SCALOCK_DBNAME: scalock
+  SCALOCK_DBPORT: "5432"
+  SCALOCK_DBSSL: require
+  SCALOCK_DBUSER: postgres
+  SCALOCK_LOG_LEVEL: INFO
+kind: ConfigMap
+metadata:
+  name: server-web-config
+  namespace: aqua00-core
+---
+apiVersion: v1
+data:
+  admin-password: Q2hhbmdlTWUhMQ==
+kind: Secret
+metadata:
+  labels:
+    app: server-console
+    app.kubernetes.io/instance: server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: server-server
+    app.kubernetes.io/version: "2022.4"
+    aqua.component: server
+    helm.sh/chart: server-2022.4.11
+  name: server-console-secrets
+  namespace: aqua00-core
+type: Opaque
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: default-cc
+    app.kubernetes.io/instance: cyber-center
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: cyber-center
+    app.kubernetes.io/version: "2022.4"
+    helm.sh/chart: cyber-center-2022.4.1
+  name: default-cc
+  namespace: aqua00-core
+spec:
+  ports:
+  - name: https
+    port: 443
+    protocol: TCP
+    targetPort: 5000
+  selector:
+    app: default-cc
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: server-audit-database
+    app.kubernetes.io/instance: server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: server-server
+    app.kubernetes.io/version: "2022.4"
+    aqua.component: database-audit
+    helm.sh/chart: server-2022.4.11
+  name: server-audit-database-svc
+  namespace: aqua00-core
+spec:
+  ports:
+  - port: 5432
+  selector:
+    app: server-audit-database
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: server-console
+    app.kubernetes.io/instance: server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: server-server
+    app.kubernetes.io/version: "2022.4"
+    aqua.component: server
+    helm.sh/chart: server-2022.4.11
+  name: server-console-svc
+  namespace: aqua00-core
+spec:
+  ports:
+  - name: aqua-web
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  - name: aqua-web-ssl
+    port: 443
+    protocol: TCP
+    targetPort: 8443
+  selector:
+    app: server-console
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: server-database
+    app.kubernetes.io/instance: server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: server-server
+    app.kubernetes.io/version: "2022.4"
+    aqua.component: database
+    helm.sh/chart: server-2022.4.11
+  name: server-database-svc
+  namespace: aqua00-core
+spec:
+  ports:
+  - port: 5432
+  selector:
+    app: server-database
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: server-gateway
+    app.kubernetes.io/instance: server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: server-gateway
+    app.kubernetes.io/version: "2022.4"
+    aqua.component: gateway
+    helm.sh/chart: gateway-2022.4.8
+  name: server-gateway-svc
+  namespace: aqua00-core
+spec:
+  ports:
+  - name: aqua-gate
+    port: 3622
+    protocol: TCP
+    targetPort: 3622
+  - name: aqua-gate-ssl
+    port: 8443
+    protocol: TCP
+    targetPort: 8443
+  - name: aqua-health
+    port: 8082
+    protocol: TCP
+    targetPort: 8082
+  selector:
+    app: server-gateway
+  type: ClusterIP
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: aqua-audit-db
+    app.kubernetes.io/instance: server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: server-server
+    app.kubernetes.io/version: "2022.4"
+    aqua.component: database
+    helm.sh/chart: server-2022.4.11
+  name: server-audit-database-pvc
+  namespace: aqua00-core
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 30Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: aqua-db
+    app.kubernetes.io/instance: server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: server-server
+    app.kubernetes.io/version: "2022.4"
+    aqua.component: database
+    helm.sh/chart: server-2022.4.11
+  name: server-database-pvc
+  namespace: aqua00-core
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 30Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    keel.sh/policy: force
+    keel.sh/pollSchedule: '@every 1m'
+    keel.sh/trigger: poll
+  labels:
+    app: default-cc
+    app.kubernetes.io/instance: cyber-center
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: cyber-center
+    app.kubernetes.io/version: "2022.4"
+    helm.sh/chart: cyber-center-2022.4.1
+  name: default-cc
+  namespace: aqua00-core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: default-cc
+  template:
+    metadata:
+      labels:
+        app: default-cc
+        app.kubernetes.io/instance: cyber-center
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: cyber-center
+        app.kubernetes.io/version: "2022.4"
+        helm.sh/chart: cyber-center-2022.4.1
+      name: default-cc
+    spec:
+      containers:
+      - args:
+        - --address=:5000
+        - --offline-key=pleaseopen
+        env:
+        - name: AQUA_ROOT_CA
+          value: /opt/aquasec/ssl/ca.pem
+        image: registry.aquasec.com/cc-premium:20230130
+        imagePullPolicy: IfNotPresent
+        name: aqua-cc
+        ports:
+        - containerPort: 5000
+        resources: {}
+      serviceAccount: aqua-sa
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: server-audit-database
+    app.kubernetes.io/instance: server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: server-server
+    app.kubernetes.io/version: "2022.4"
+    aqua.component: database-audit
+    helm.sh/chart: server-2022.4.11
+  name: server-audit-database
+  namespace: aqua00-core
+spec:
+  selector:
+    matchLabels:
+      app: server-audit-database
+  template:
+    metadata:
+      annotations:
+        checksum/config: 131bb78bfc8ba138c70d4fdd0e6cb5f37889488f71c2d40c6eb323834827b8cf
+      labels:
+        app: server-audit-database
+        app.kubernetes.io/instance: server
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: server-server
+        aqua.component: database-audit
+      name: server-audit-database
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: aqua-audit-db
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        envFrom:
+        - configMapRef:
+            name: server-db-config
+        image: registry.aquasec.com/database:2022.4.81
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - exec pg_isready --host $POD_IP
+          failureThreshold: 6
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+        name: auditdb
+        ports:
+        - containerPort: 5432
+          protocol: TCP
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - exec pg_isready --host $POD_IP
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+        resources:
+          limits:
+            cpu: 12000m
+            memory: 20Gi
+          requests:
+            cpu: 3000m
+            memory: 6Gi
+        securityContext:
+          privileged: false
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgres-audit-database
+      initContainers:
+      - command:
+        - sh
+        - -c
+        - '[ -f $PGDATA/server.key ] && chmod 600 $PGDATA/server.key || echo ''OK'' '
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: aqua-audit-db
+        envFrom:
+        - configMapRef:
+            name: server-initdb-config
+        image: registry.aquasec.com/database:2022.4.81
+        name: server-auditdb-init
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgres-audit-database
+      securityContext:
+        fsGroup: 11433
+        runAsGroup: 70
+        runAsUser: 70
+      serviceAccount: aqua-sa
+      tolerations:
+      - effect: NoExecute
+        key: node.kubernetes.io/unreachable
+        operator: Exists
+        tolerationSeconds: 6000
+      - effect: NoExecute
+        key: node.kubernetes.io/not-ready
+        operator: Exists
+        tolerationSeconds: 6000
+      volumes:
+      - name: postgres-audit-database
+        persistentVolumeClaim:
+          claimName: server-audit-database-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: server-console
+    app.kubernetes.io/instance: server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: server-server
+    app.kubernetes.io/version: "2022.4"
+    aqua.component: server
+    helm.sh/chart: server-2022.4.11
+  name: server-console
+  namespace: aqua00-core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: server-console
+  template:
+    metadata:
+      annotations:
+        checksum/config: 49c3790af606830b2fc54e152439f6c08361f375fd261d8d9bc5f09c0506192b
+      labels:
+        app: server-console
+        app.kubernetes.io/instance: server
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: server-server
+        aqua.component: server
+      name: server-console
+    spec:
+      containers:
+      - env:
+        - name: CYBERCENTER_ADDR
+          value: https://default-cc.aqua00-core
+        - name: SCALOCK_DBPASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: aqua-db
+        - name: SCALOCK_AUDIT_DBPASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: aqua-audit-db
+        - name: ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: admin-password
+              name: server-console-secrets
+        - name: OFFLINE_CC_MTLS_ENABLE
+          value: "1"
+        envFrom:
+        - configMapRef:
+            name: server-web-config
+        image: registry.aquasec.com/console:2022.4.81
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        name: web
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        - containerPort: 8443
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        resources:
+          limits:
+            cpu: 3000m
+            memory: 2Gi
+          requests:
+            cpu: 2000m
+            memory: 1Gi
+      securityContext:
+        fsGroup: 11433
+        runAsGroup: 11433
+        runAsUser: 11431
+      serviceAccount: aqua-sa
+      tolerations:
+      - effect: NoExecute
+        key: node.kubernetes.io/unreachable
+        operator: Exists
+        tolerationSeconds: 6000
+      - effect: NoExecute
+        key: node.kubernetes.io/not-ready
+        operator: Exists
+        tolerationSeconds: 6000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: server-database
+    app.kubernetes.io/instance: server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: server-server
+    app.kubernetes.io/version: "2022.4"
+    aqua.component: database
+    helm.sh/chart: server-2022.4.11
+  name: server-database
+  namespace: aqua00-core
+spec:
+  selector:
+    matchLabels:
+      app: server-database
+  template:
+    metadata:
+      annotations:
+        checksum/config: 131bb78bfc8ba138c70d4fdd0e6cb5f37889488f71c2d40c6eb323834827b8cf
+      labels:
+        app: server-database
+        app.kubernetes.io/instance: server
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: server-server
+        aqua.component: database
+      name: server-database
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: aqua-db
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        envFrom:
+        - configMapRef:
+            name: server-db-config
+        image: registry.aquasec.com/database:2022.4.81
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - exec pg_isready --host $POD_IP
+          failureThreshold: 6
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+        name: db
+        ports:
+        - containerPort: 5432
+          protocol: TCP
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - exec pg_isready --host $POD_IP
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+        resources:
+          limits:
+            cpu: 12000m
+            memory: 20Gi
+          requests:
+            cpu: 3000m
+            memory: 6Gi
+        securityContext:
+          privileged: false
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgres-database
+      initContainers:
+      - command:
+        - sh
+        - -c
+        - '[ -f $PGDATA/server.key ] && chmod 600 $PGDATA/server.key || echo ''OK'' '
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: aqua-db
+        envFrom:
+        - configMapRef:
+            name: server-initdb-config
+        image: registry.aquasec.com/database:2022.4.81
+        name: server-db-init
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgres-database
+      securityContext:
+        fsGroup: 11433
+        runAsGroup: 70
+        runAsUser: 70
+      serviceAccount: aqua-sa
+      tolerations:
+      - effect: NoExecute
+        key: node.kubernetes.io/unreachable
+        operator: Exists
+        tolerationSeconds: 6000
+      - effect: NoExecute
+        key: node.kubernetes.io/not-ready
+        operator: Exists
+        tolerationSeconds: 6000
+      volumes:
+      - name: postgres-database
+        persistentVolumeClaim:
+          claimName: server-database-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: server-gateway
+    app.kubernetes.io/instance: server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: server-gateway
+    app.kubernetes.io/version: "2022.4"
+    aqua.component: gateway
+    helm.sh/chart: gateway-2022.4.8
+  name: server-gateway
+  namespace: aqua00-core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: server-gateway
+  template:
+    metadata:
+      annotations:
+        checksum/config: a944aac79b6b9598c127dbe2e81433ec13b7a490e95d49bb471fef05ab779022
+      labels:
+        app: server-gateway
+        app.kubernetes.io/instance: server
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: server-gateway
+        app.kubernetes.io/version: "2022.4"
+        aqua.component: gateway
+        helm.sh/chart: gateway-2022.4.8
+      name: server-gateway
+    spec:
+      containers:
+      - env:
+        - name: SCALOCK_DBPASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: aqua-db
+        - name: SCALOCK_AUDIT_DBPASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: aqua-audit-db
+        envFrom:
+        - configMapRef:
+            name: server-gateway-config
+        image: registry.aquasec.com/gateway:2022.4.81
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8082
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        name: gate
+        ports:
+        - containerPort: 3622
+          protocol: TCP
+        - containerPort: 8443
+          protocol: TCP
+        readinessProbe:
+          initialDelaySeconds: 60
+          periodSeconds: 60
+          tcpSocket:
+            port: 8443
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 4Gi
+          requests:
+            cpu: 1000m
+            memory: 2Gi
+      securityContext:
+        fsGroup: 11433
+        runAsGroup: 11433
+        runAsUser: 11431
+      serviceAccount: aqua-sa
+      tolerations:
+      - effect: NoExecute
+        key: node.kubernetes.io/unreachable
+        operator: Exists
+        tolerationSeconds: 6000
+      - effect: NoExecute
+        key: node.kubernetes.io/not-ready
+        operator: Exists
+        tolerationSeconds: 6000
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    helm.sh/hook: pre-upgrade
+    helm.sh/hook-delete-policy: before-hook-creation
+    helm.sh/hook-weight: "0"
+  labels:
+    app: server-console
+    app.kubernetes.io/instance: server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: server-server
+    aqua.component: server
+  name: server-check-db-upgrade
+  namespace: aqua00-core
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: server-console
+        app.kubernetes.io/instance: server
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: server-server
+        aqua.component: server
+      name: server
+    spec:
+      containers:
+      - command:
+        - /opt/aquasec/sedockweb
+        - test-upgrade
+        env:
+        - name: SCALOCK_DBPASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: aqua-db
+        - name: SCALOCK_AUDIT_DBPASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: aqua-audit-db
+        envFrom:
+        - configMapRef:
+            name: server-web-config
+        image: registry.aquasec.com/console:2022.4.81
+        imagePullPolicy: IfNotPresent
+        name: check-db-upgrade-job
+      imagePullSecrets:
+      - name: aqua-registry-secret
+      restartPolicy: Never

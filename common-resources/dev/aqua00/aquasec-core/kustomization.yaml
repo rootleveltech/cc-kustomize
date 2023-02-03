@@ -1,0 +1,64 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: aqua00-core
+resources:
+- ../../../aquasec-core
+patches:
+- path: patches/deployment_default-cc.yaml
+  target:
+    kind: Deployment
+    name: default-cc
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: aqua00-core-server-role-binding
+  target:
+    kind: ClusterRoleBinding
+    name: server-role-binding
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: aqua00-core-server-cluster-reader
+  target:
+    kind: ClusterRoleBinding
+    name: server-cluster-reader
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: aqua00-core-server-cluster-role
+  target:
+    kind: ClusterRole
+    name: server-cluster-role
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: aqua00-core-server-scc
+  target:
+    kind: SecurityContextConstraints
+    name: server-scc
+- path: patches/clusterrolebinding_aqua00-core-server-cluster-reader.yaml
+  target:
+    kind: ClusterRoleBinding
+    name: aqua00-core-server-cluster-reader
+- path: patches/clusterrolebinding_aqua00-core-server-role-binding.yaml
+  target:
+    kind: ClusterRoleBinding
+    name: aqua00-core-server-role-binding
+- path: patches/deployment_default-cc.yaml
+  target:
+    kind: Deployment
+    name: default-cc
+- path: patches/deployment_server-console.yaml
+  target:
+    kind: Deployment
+    name: server-console
+- path: patches/deployment_server-gateway.yaml
+  target:
+    kind: Deployment
+    name: server-gateway
+- path: patches/rolebinding_admin.yaml
+  target:
+    group: rbac.authorization.k8s.io
+    kind: RoleBinding
+    name: admin

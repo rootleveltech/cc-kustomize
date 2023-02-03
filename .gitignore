@@ -1,0 +1,5 @@
+*/kustomize-helm/*
+*/charts/*
+**sensitive**
+*.sensitive.yaml
+./common-resources/dev/*/*/secrets/*.sensitive.yaml

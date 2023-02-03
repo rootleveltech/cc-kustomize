@@ -1,0 +1,8 @@
+---
+kind: ClusterRoleBinding
+metadata:
+  name: handled-by-target-keyword-in-kustomization-yaml
+subjects:
+- kind: ServiceAccount
+  name: aqua-sa
+  namespace: aqua00-core

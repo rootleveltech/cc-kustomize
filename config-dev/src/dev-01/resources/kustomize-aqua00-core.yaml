@@ -1,0 +1,24 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: aqua04-core
+  namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/cc2.force-update: "true"
+    argocd-image-updater.argoproj.io/cc2.pull-secret: pullsecret:argocd/aqua-registry-secret
+    argocd-image-updater.argoproj.io/image-list: cc2=registry.aquasec.com/cc-premium
+    # argocd-image-updater.argoproj.io/write-back-method: argocd
+    argocd-image-updater.argoproj.io/write-back-target: kustomization
+    argocd-image-updater.argoproj.io/argocd.kustomize.image-name: quay.io/argoproj/argocd
+spec:
+  destination:
+    namespace: aqua00-core
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: config-dev/src/dev-01/aqua00/aquasec-core
+    repoURL: https://github.com/rootleveltech/cc-kustomize.git
+    targetRevision: testing
+    plugin:
+      name: kustomize-build-with-helm

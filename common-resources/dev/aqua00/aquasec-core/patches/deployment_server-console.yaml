@@ -1,0 +1,13 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: handled-by-target-keyword-in-kustomization-yaml
+spec:
+  template:
+    spec:
+      containers:
+      - env:
+        - name: CYBERCENTER_ADDR
+          value: https://default-cc.aqua00-core
+        name: web

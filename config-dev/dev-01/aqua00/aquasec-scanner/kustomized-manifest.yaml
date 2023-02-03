@@ -1,0 +1,3 @@
+# This is an auto-generated file. DO NOT EDIT
+---
+Error: accumulating resources: accumulation err='accumulating resources from 'git::https://github.com/rootleveltech/cc-kustomize.git//common-resources/dev/aqua00/aquasec-scanner?ref=testing': evalsymlink failure on '/home/argocd/src/dev-01/aqua00/aquasec-scanner/git::https:/github.com/rootleveltech/cc-kustomize.git/common-resources/dev/aqua00/aquasec-scanner?ref=testing' : lstat /home/argocd/src/dev-01/aqua00/aquasec-scanner/git::https:: no such file or directory': evalsymlink failure on '/tmp/kustomize-257882172/common-resources/dev/aqua00/aquasec-scanner' : lstat /tmp/kustomize-257882172/common-resources/dev/aqua00/aquasec-scanner: no such file or directory
