@@ -2,32 +2,23 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: cc-premium-2
+  name: cc-premium-kustomize
   namespace: argocd
   annotations:
-    argocd-image-updater.argoproj.io/cc.force-update: "true"
-    argocd-image-updater.argoproj.io/cc.pull-secret: pullsecret:argocd/aqua-registry-secret
-    argocd-image-updater.argoproj.io/image-list: cc=registry.aquasec.com/cc-premium
+    # argocd-image-updater.argoproj.io/cc.force-update: "true"
+    # argocd-image-updater.argoproj.io/cc.pull-secret: pullsecret:argocd/aqua-registry-secret
+    # argocd-image-updater.argoproj.io/image-list: cc=registry.aquasec.com/cc-premium
 spec:
   destination:
     name: ''
-    namespace: aqua
+    namespace: aquasec-cc-kustomize
     server: 'https://kubernetes.default.svc'
   source:
-    path: ''
-    repoURL: 'https://helm.aquasec.com'
-    targetRevision: 2022.4.1
-    chart: cyber-center
-    helm:
-      parameters:
-        - name: image.repository
-          value: cc-premium
-        - name: image.tag
-          value: '20230101'
-        - name: serviceaccount.create 
-          value: 'true'
-        - name: serviceaccount.name
-          value: 'aqua-sa'
+    path: cc-image-updater/src/aquasec-cc/kustomization.yaml
+    repoURL: https://github.com/rootleveltech/cc-kustomize
+    targetRevision: testing
   project: default
   syncPolicy:
     automated: null
+    syncOptions:
+    - CreateNamespace=true
