@@ -6,4 +6,4 @@ images:
 - name: registry.aquasec.com/cc-premium:20230130
   newTag: '20230201'
 resources:
-- - git::https://github.com/rootleveltech/cc-kustomize.git//common-resources/dev/aqua00/aquasec-core?ref=testing
+- git::https://github.com/rootleveltech/cc-kustomize.git//common-resources/dev/aqua00/aquasec-core?ref=testing
