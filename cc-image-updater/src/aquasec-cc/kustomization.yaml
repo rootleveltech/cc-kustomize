@@ -6,4 +6,4 @@ images:
 - name: registry.aquasec.com/cc-premium:20230130
   newTag: '20230201'
 resources:
-- ./config-dev/dev-01/aqua00/aquasec-core/kustomized-manifest.yaml
+- - git::https://github.com/rootleveltech/cc-kustomize.git//common-resources/dev/aqua00/aquasec-core?ref=testing
