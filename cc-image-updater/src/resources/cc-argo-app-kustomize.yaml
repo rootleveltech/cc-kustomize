@@ -14,7 +14,7 @@ spec:
     namespace: aquasec-cc-kustomize
     server: 'https://kubernetes.default.svc'
   source:
-    path: cc-image-updater/src/aquasec-cc/kustomization.yaml
+    path: cc-image-updater/src/aquasec-cc
     repoURL: https://github.com/rootleveltech/cc-kustomize
     targetRevision: testing
   project: default
